@@ -1,0 +1,116 @@
+# reinos_obscuros — estrutura atualizada (25/11/2026)
+
+Legenda:  [pronto]  [comecado]  [fazer agora]  [daqui a pouco]  [deixar pro final]  [novo]  [refazer]
+Nomes: "hoje: x.js" = como o arquivo se chama no git agora. Sugiro renomear tudo de dados para dados_*.js
+(e mudar o src no index.html na mesma hora).
+
+REGRAS DA CASA (valem para todos os arquivos)
+  - cada informação existe em UM lugar só; os outros arquivos consultam
+  - DADOS = tabelas que nao mudam durante o jogo; ESTADO = o que muda (fica no jogo / no reino)
+  - as regras recebem o reino como parametro (produzirDia(reino)), nunca mexem em variavel solta
+  - a TELA so le o estado e escreve HTML; quem muda o estado sao as regras
+  - ids em minusculas, sem acento e sem espaco (casa_media); o acento fica no "nome"
+
+
+DADOS (tabelas)
+  dados_base.js         [pronto]        status em 3 grupos (fisico, mental, alma) = 17 status, e nomes por raca
+  dados_racas.js        [pronto]        racas e status base em %  (hoje: raca.js). humano esta vazio = tudo 100
+  dados_traits.js       [pronto]        traits e bonus em pontos  (hoje: traits.js)
+  dados_itens.js        [comecado]      todos os itens. faltam: pedras (marmore, granito...), tabuas, carne/leite/ovo procedurais
+  dados_construcoes.js  [comecado]      46 construcoes em 7 grupos  (hoje: construcoes.js). NAO guarda producao nem trabalho
+  dados_trabalhos.js    [comecado]      38 profissoes: local, limite, terreno, slots, producao, quantidade
+  dados_receitas.js     [novo]          o que cada oficina fabrica (entrada, saida, tempo). separado das construcoes
+  dados_fases.js        [novo]          curva de desenvolvimento e decaimento por fracao da vida (idade / expectativa)
+  dados_necessidades.js [daqui a pouco] fome, sono, recreacao, conforto
+  dados_eventos.js      [deixar pro final]  incidentes: incursao, praga, caravana, eclipse
+  dados_pesquisa.js     [deixar pro final]  arvore de pesquisa
+
+
+PESSOAS
+  dna.js                [pronto]        DNA: criar, codigo de digitos (blocos de 3), filhos, status potencial   (no plano antigo: npcs.js)
+  npcs.js               [fazer agora]   cria a pessoa (id, nome, codigo DNA, nascimento) e a populacao inicial; nascer filho
+  fases.js              [novo]          status de hoje = potencial x curva da fase da vida (usa dados_fases.js)
+  interacoes.js         [daqui a pouco] relacoes e necessidades. NAO distribui trabalho (isso e o alocacao.js)
+
+
+REINO
+  reinado.js            [pronto v1]     registro de um reino: slots, zonas, construcoes, pessoas, povo, consultas
+                                        pendente: tirar o campo "trabalhadores" das construcoes
+  zonas.js              [fazer agora]   dar e tirar slots de cada zona, criar zona, mover construcao.
+                                        REMOVER do plano: cômodos fechados / flood fill (o reino agora e uma lista)
+  alocacao.js           [novo]          quem trabalha onde: pessoa.trabalhos, fixar em construcao ou por zona,
+                                        vagas livres, "por que nao produz"
+  politica.js           [daqui a pouco] gerenciamento, decisoes, impostos
+
+
+SISTEMAS
+  tempo.js              [comecado]      so calendario e lerTempo. passarTempo e setInterval SAEM daqui (vao para o jogo.js)
+  clima.js              [daqui a pouco] estacoes, temperatura, chuva
+  producao.js           [fazer agora]   construir (custo, slots) e produzir por dia (slots usados x quantidade)
+                                        depois: armazenamento, consumo de comida, encomendas das oficinas
+  combate.js            [daqui a pouco] corpo, ferimentos, turnos
+  pesquisa.js           [deixar pro final]
+  geracao_itens.js      [deixar pro final]  roupas, armas, armaduras procedurais (carne, tabua)
+
+
+MUNDO
+  mundo.js              [deixar pro final]  grade do mundo, onde ficam reinos e dungeons
+  reinos.js             [deixar pro final]  o conjunto de reinos, lider, crescimento e IA (recuperarTempo, decidirIA)
+  relacoes.js           [deixar pro final]  diplomacia, comercio, guerra entre reinos
+  dungeons.js           [deixar pro final]  desafios e recompensas
+  historia.js           [deixar pro final]  eventos do passado e do presente
+
+
+TELA
+  index.html            [refazer]       so as areas vazias e a ordem dos scripts
+  estilo.css            [refazer]
+  ui.js                 [refazer]       trocar os dados de EXEMPLO pelo reino de verdade (reinoAtual())
+  entrada.js            [refazer]       um ouvinte so, por data-acao
+
+
+BASE
+  jogo.js               [comecado]      o estado: minutos, reinos, reinoAtual. passarTempo, virada do dia (aCadaDia / aCadaMes)
+  validar.js            [novo]          confere os dados entre si (ver "dicas") — so para desenvolver
+  save.js               [daqui a pouco] salvar o jogo como texto (JSON) + exportar/importar
+  main.js               [daqui a pouco] iniciar: cria o reino, a populacao inicial, liga o relogio e desenha
+
+
+ORDEM DOS SCRIPTS NO index.html
+  1  dados_base, dados_racas, dados_traits, dados_itens, dados_construcoes, dados_trabalhos, dados_receitas, dados_fases
+  2  tempo, dna
+  3  reinado, zonas, alocacao, npcs, fases, producao
+  4  jogo            (cria o reino: precisa vir DEPOIS do reinado)
+  5  validar         (opcional, so em desenvolvimento)
+  6  ui, entrada
+  7  main            (sempre o ultimo)
+  regra: quem USA vem depois de quem e usado. funcoes so rodam depois que tudo carregou, mas
+  tudo que roda na hora do carregamento (como criarReino no jogo.js) precisa dos arquivos antes dele.
+
+
+COMO CONSTRUIR (nesta ordem; cada passo ja deixa algo funcionando)
+  1  pequenos ajustes (lista abaixo)
+  2  producao.js: construir uma casa e um poco pagando custo e ocupando slots
+  3  npcs.js: populacao inicial, para o povo sair de 0/0
+  4  zonas.js e alocacao.js: dar slots as zonas e colocar pessoas para trabalhar
+  5  ligar ui.js ao reino de verdade
+  6  produzir por dia + consumo de comida (jogo.js chama na virada do dia)
+  7  save.js
+  8  depois: fases.js, oficinas e receitas, politica, reinos dos outros, combate
+
+
+
+DICAS
+  - Teste cada arquivo assim que terminar: ligue no index.html e olhe o console. Quase todo erro ate agora foi
+    virgula, chave ou "=" faltando (ex.: "const fisico: {" em vez de "const fisico = {").
+  - Um erro que aparece no console e quase sempre o primeiro; corrija o de cima antes de olhar os outros.
+  - Comentario com // vai ate o fim da LINHA. Se um } ficar depois de um //, ele vira comentario e o arquivo quebra.
+  - Mudar um id (de construcao, item, profissao) quebra tudo que o usa: pesquise o nome nos outros arquivos antes.
+  - validar.js: uma funcao que confere os dados entre si (construcao usa item que existe? profissao aponta para
+    construcao que existe? raca e trait usam status que existem?). Rode no console depois de mexer nos dados.
+  - Dados e numeros sao exemplos: balanceie jogando, nao pensando. Deixe os numeros faceis de achar (topo do arquivo).
+  - Edite cada arquivo em UM lugar so (celular ou GitHub). Editar nos dois ao mesmo tempo gera conflito.
+  - Quando um arquivo passar de umas 300 linhas, divida por assunto.
+  - Nao faca a tela mandar no jogo: botoes chamam funcoes de regra, e depois a tela redesenha.
+  - Ids dos dados em ASCII minusculo (GitHub Pages diferencia maiusculas de minusculas no nome dos arquivos).
+  - Guarde o codigo do DNA e o nascimento da pessoa, nunca os status prontos: o status e calculado na hora.
+  - O lider e os reinos de longe sao so numeros e um lider; so o seu reino tem a lista completa de pessoas.

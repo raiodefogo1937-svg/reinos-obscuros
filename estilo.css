@@ -1,0 +1,190 @@
+/* ---------- Cores e tamanhos (mude aqui para testar outros visuais) ---------- */
+:root {
+  --fundo: #150f12;          /* fundo da tela */
+  --painel: #1f161a;         /* colunas laterais */
+  --cartao: #2a1d22;         /* botões e cartões */
+  --linha: #4a2c33;          /* divisórias */
+  --osso: #e8dcd0;           /* texto */
+  --osso-fraco: #b3a0a0;     /* texto secundário */
+  --sangue: #b3262f;         /* vermelho principal */
+  --sangue-escuro: #6e1a22;  /* o que está selecionado */
+  --ouro: #d0a24a;           /* ouro */
+
+  --larg-esquerda: 120px;
+  --larg-direita: 240px;
+  --alt-barra: 34px;
+  --alt-abas: 42px;
+}
+
+* { box-sizing: border-box; }
+
+/* sem zoom automático de texto e sem zoom por toque duplo */
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
+/* ---------- Layout: três colunas ---------- */
+body {
+  margin: 0;
+  height: 100vh;
+  height: 100dvh;
+  display: grid;
+  grid-template-columns: var(--larg-esquerda) 1fr var(--larg-direita);
+  grid-template-rows: var(--alt-barra) 1fr var(--alt-abas);
+  grid-template-areas:
+    "acoes barra  info"
+    "acoes centro info"
+    "acoes abas   info";
+  overflow: hidden;
+  background: var(--fundo);
+  color: var(--osso);
+  font: 14px/1.4 system-ui, sans-serif;
+}
+
+#acoes  { grid-area: acoes; background: var(--painel); border-right: 1px solid var(--linha); padding: 6px; overflow-y: auto; display: flex; flex-direction: column; }
+#barra  { grid-area: barra; background: var(--painel); border-bottom: 1px solid var(--linha); padding: 0 10px; display: flex; align-items: center; gap: 14px; }
+#centro { grid-area: centro; padding: 8px 10px; overflow-y: auto; }
+#abas   { grid-area: abas; background: var(--painel); border-top: 1px solid var(--linha); display: flex; }
+#info   { grid-area: info; background: var(--painel); border-left: 1px solid var(--linha); padding: 8px 10px; overflow-y: auto; }
+
+/* barra de rolagem fina (no toque, o dedo arrasta o conteúdo) */
+#acoes, #centro, #info { scrollbar-width: thin; scrollbar-color: var(--linha) transparent; }
+
+/* ---------- Botões ---------- */
+button { font: inherit; color: inherit; cursor: pointer; }
+
+.botao {
+  display: block;
+  width: 100%;
+  min-height: 38px;
+  margin-bottom: 6px;
+  background: var(--cartao);
+  border: 1px solid var(--linha);
+  border-radius: 4px;
+}
+.botao:active { background: var(--sangue-escuro); border-color: var(--sangue); }
+.botao.pequeno { min-height: 30px; font-size: 12px; }
+
+/* botão Menu: discreto, sempre no pé da coluna da esquerda */
+#acoes .menu { margin-top: auto; margin-bottom: 0; background: transparent; color: var(--osso-fraco); }
+
+/* ---------- Barra do topo ---------- */
+#barra .ouro { color: var(--ouro); }
+#barra .tempo { margin-left: auto; display: flex; gap: 4px; }
+#barra .botao { width: auto; margin: 0; padding: 0 10px; min-height: 26px; }
+
+/* ---------- Títulos ---------- */
+h3 { margin: 10px 0 6px; font: 600 15px/1.3 Georgia, "Times New Roman", serif; }
+#acoes h3:first-child, #info h3:first-child { margin-top: 0; }
+.contexto { margin: 0 0 8px; color: var(--osso-fraco); font-size: 12px; }
+
+/* ---------- Tela da sede: grupos, zonas e cartões ---------- */
+/* cada grupo tem uma cor própria, que aparece no título e nos cartões */
+section { --cor-grupo: var(--sangue); }
+.g-castelo  { --cor-grupo: #b3262f; }
+.g-exercito { --cor-grupo: #7d8794; }
+.g-vila     { --cor-grupo: #c8963e; }
+.g-producao { --cor-grupo: #6f8a4f; }
+.g-oficinas { --cor-grupo: #b8683a; }
+.g-religiao { --cor-grupo: #cfc6b0; }
+.g-magico   { --cor-grupo: #8a62b8; }
+
+.titulo-grupo {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 6px 2px;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid var(--cor-grupo);
+  font: 600 17px Georgia, "Times New Roman", serif;
+}
+
+.zonas { display: flex; flex-wrap: wrap; gap: 4px; margin: 8px 0; }
+
+.zona {
+  min-height: 34px;
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid var(--linha);
+  border-radius: 4px;
+  color: var(--osso-fraco);
+}
+.zona.ativa { background: var(--sangue-escuro); border-color: var(--cor-grupo); color: var(--osso); font-weight: 600; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; margin-bottom: 14px; }
+
+.card {
+  min-height: 56px;
+  padding: 8px;
+  text-align: left;
+  background: var(--cartao);
+  border: 1px solid var(--linha);
+  border-left: 4px solid var(--cor-grupo);
+  border-radius: 4px;
+}
+.card.selecionado { background: var(--sangue-escuro); border-color: var(--sangue); border-left-color: var(--cor-grupo); }
+
+/* ---------- Abas de baixo ---------- */
+.aba {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--linha);
+  color: var(--osso-fraco);
+}
+.aba:last-child { border-right: 0; }
+.aba.ativa { background: var(--fundo); color: var(--osso); box-shadow: inset 0 3px 0 var(--sangue); }
+
+/* ---------- Coluna da direita ---------- */
+dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; }
+dt { color: var(--osso-fraco); }
+dd { margin: 0; }
+.vazio { color: var(--osso-fraco); }
+
+/* ---------- Janela do menu ---------- */
+#janela {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 4, 5, 0.75);
+}
+#janela.escondido { display: none; }
+
+.janela {
+  width: min(420px, 90vw);
+  max-height: 90dvh;
+  overflow-y: auto;
+  padding: 12px;
+  background: var(--painel);
+  border: 1px solid var(--sangue);
+  border-radius: 6px;
+}
+.janela h3 { margin-top: 0; }
+.janela .opcoes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.janela .botao { margin: 0; }
+
+/* ---------- Acessibilidade e celular em pé ---------- */
+:focus-visible { outline: 2px solid var(--sangue); outline-offset: 2px; }
+
+#aviso-girar { display: none; }
+@media (orientation: portrait) {
+  #aviso-girar {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+    background: var(--fundo);
+    font: 600 18px Georgia, "Times New Roman", serif;
+  }
+}

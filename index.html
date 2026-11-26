@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <!-- sem zoom: escala fixa em 1 e sem pinça nem toque duplo -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#150f12">
+  <title>Reinos Obscuros</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+  <!-- Só as áreas vazias. Quem preenche cada uma é o ui.js -->
+  <aside id="acoes"></aside>     <!-- esquerda: funções da tela atual e botão Menu -->
+  <header id="barra"></header>   <!-- topo do centro: data, ouro, velocidade -->
+  <main id="centro"></main>      <!-- centro: a tela da aba atual -->
+  <nav id="abas"></nav>          <!-- base do centro: sede, mundo, estoque... -->
+  <aside id="info"></aside>      <!-- direita: informações -->
+
+  <!-- janela do menu: fica escondida; tocar fora dela fecha -->
+  <div id="janela" class="escondido" data-acao="fechar"></div>
+
+  <div id="aviso-girar">Gire o celular para jogar na horizontal</div>
+
+  <script src="ui.js"></script>
+  <script src="entrada.js"></script>
+
+</body>
+</html>
